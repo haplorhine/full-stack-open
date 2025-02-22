@@ -18,10 +18,11 @@ const StatisticLine = ({text, value}) =>
     </tr>
   )
 
-const Statistics = ({all, good, neutral, bad}) => {
-  const calculateAverage = () => (good - bad) / all || 0
+const Statistics = ({good, neutral, bad}) => {
+  const all = good + neutral + bad
+  const average = (good - bad) / all
 
-  const calculatePositivePercentage = () => (good / all) * 100 || 0
+  const positivePercentage = (good / all) * 100
 
   const statistics =
       <table>
@@ -30,8 +31,8 @@ const Statistics = ({all, good, neutral, bad}) => {
           <StatisticLine text="neutral" value ={neutral} />
           <StatisticLine text="bad" value ={bad} />
           <StatisticLine text="all" value ={all} />
-          <StatisticLine text="average" value ={calculateAverage()} />
-          <StatisticLine text="positive" value ={calculatePositivePercentage() + " %"} />
+          <StatisticLine text="average" value ={average} />
+          <StatisticLine text="positive" value ={positivePercentage + " %"} />
         </tbody>
       </table>
   const noFeedback = <p>No feedback given</p>
@@ -49,21 +50,17 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
-  const [allClicks, setClicks] = useState(0)
 
   const increaseGood = () => {
     setGood(good + 1)
-    setClicks(allClicks + 1)
   }
 
   const increaseNeutral = () => {
     setNeutral(neutral + 1)
-    setClicks(allClicks + 1)
   }
 
   const increaseBad = () => {
     setBad(bad + 1)
-    setClicks(allClicks + 1)
   }
 
   return (
@@ -73,7 +70,7 @@ const App = () => {
       <Button onClick={increaseNeutral} text="neutral" />
       <Button onClick={increaseBad} text="bad" />
       
-      <Statistics good={good} neutral={neutral} bad={bad} all={allClicks}/>
+      <Statistics good={good} neutral={neutral} bad={bad}/>
       
     </div>
   )
