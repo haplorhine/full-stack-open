@@ -4,13 +4,19 @@ const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas' }
   ])
+  
   const [newName, setNewName] = useState('')
 
   const personsList = persons.map((person) => <div key={person.name}>{person.name}</div>)
 
   const addName = (ev) => {
     ev.preventDefault()
-    setPersons(persons.concat({ name: newName }))
+    const nameInPhonebook = persons.some(person => person.name === newName)
+    if (nameInPhonebook) {
+      alert(`${newName} is already added to phonebook`)
+    } else {
+      setPersons(persons.concat({ name: newName }))
+    }
     setNewName('')
   }
 
