@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
@@ -14,11 +14,11 @@ const App = () => {
 
   useEffect(() => {
     console.log("effect")
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
+    personService
+      .getAll()
+      .then(initialPersons => {
         console.log('promise fulfilled')
-        setPersons(response.data)
+        setPersons(initialPersons)
       })
   }, [])
   console.log("persons length", persons.length)
@@ -33,10 +33,15 @@ const App = () => {
     if (nameInPhonebook) {
       alert(`${newName} is already added to phonebook`)
     } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }))
+      personService
+        .create({ name: newName, number: newNumber })
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     }
-    setNewName('')
-    setNewNumber('')
+
   }
 
   const nameChange = ev => setNewName(ev.target.value)
@@ -56,7 +61,7 @@ const App = () => {
       <PersonForm onSubmit={addPerson} numberChange={numberChange} nameChange={nameChange} newName={newName} newNumber={newNumber} />
 
       <h3>Numbers</h3>
-      
+
       <Persons persons={filteredPersons} />
     </div>
   )
