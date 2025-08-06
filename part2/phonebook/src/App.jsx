@@ -26,7 +26,7 @@ const App = () => {
   const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
 
 
-  const addPerson = (ev) => {
+  const addPerson = ev => {
     ev.preventDefault()
     console.log(ev)
     const nameInPhonebook = persons.some(person => person.name === newName)
@@ -42,6 +42,18 @@ const App = () => {
         })
     }
 
+  }
+
+  const deletePerson = person => {
+    console.log(`${person.name} needs to be deleted`)
+    if (confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(person.id)
+        .then(returnedPerson => {
+          console.log(returnedPerson)
+          setPersons(persons.filter(person => person.id !== returnedPerson.id))
+      })
+    }
   }
 
   const nameChange = ev => setNewName(ev.target.value)
@@ -62,7 +74,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} deletePerson={deletePerson} />
     </div>
   )
 }
