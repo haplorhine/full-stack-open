@@ -29,10 +29,8 @@ const App = () => {
   const addPerson = ev => {
     ev.preventDefault()
     console.log(ev)
-    const nameInPhonebook = persons.some(person => person.name === newName)
-    if (nameInPhonebook) {
-      alert(`${newName} is already added to phonebook`)
-    } else {
+    const existingPerson = persons.find(person => person.name === newName)
+    if (existingPerson === undefined) {
       personService
         .create({ name: newName, number: newNumber })
         .then(returnedPerson => {
@@ -40,8 +38,18 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+    } else if (confirm(`${newName} is already added to the phonebook, replace old number with new one?`)) {
+      const changedPerson = { ...existingPerson, number: newNumber }
+      personService
+        .update(existingPerson.id, changedPerson)
+        .then(() => {
+          personService
+            .getAll()
+            .then(returnedPersons => {
+              setPersons(returnedPersons)
+            })
+        })
     }
-
   }
 
   const deletePerson = person => {
@@ -52,7 +60,7 @@ const App = () => {
         .then(returnedPerson => {
           console.log(returnedPerson)
           setPersons(persons.filter(person => person.id !== returnedPerson.id))
-      })
+        })
     }
   }
 
