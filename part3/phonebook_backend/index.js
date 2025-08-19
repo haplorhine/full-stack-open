@@ -29,6 +29,12 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello Phonebook!</h1>')
 })
 
+app.get('/info', (request, response) => {
+  const message = `Phonebook has info for ${persons.length} people`
+  const dateOfRequest = Date()
+  response.send(`<p>${message}</p><p>${dateOfRequest}</p>`)
+})
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
