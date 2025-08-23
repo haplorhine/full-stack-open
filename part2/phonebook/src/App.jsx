@@ -40,6 +40,7 @@ const App = () => {
       personService
         .create({ name: newName, number: newNumber })
         .then(returnedPerson => {
+          console.log("app returnedperson:", returnedPerson)
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
@@ -62,14 +63,13 @@ const App = () => {
     }
   }
 
-  const deletePerson = person => {
-    console.log(`${person.name} needs to be deleted`)
-    if (confirm(`Delete ${person.name}?`)) {
+  const deletePerson = personToDelete => {
+    console.log(`${personToDelete.name} needs to be deleted`) 
+    if (confirm(`Delete ${personToDelete.name}?`)) {
       personService
-        .remove(person.id)
-        .then(returnedPerson => {
-          console.log(returnedPerson)
-          setPersons(persons.filter(person => person.id !== returnedPerson.id))
+        .remove(personToDelete.id)
+        .then(response => {
+          setPersons(persons.filter(person => person.id !== personToDelete.id))
         })
     }
   }
