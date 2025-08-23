@@ -11,3 +11,6 @@ Content-Type: application/json
   "name": "Hugo",
   "number": "32444"
 }
+
+###
+DELETE http://localhost:3001/api/persons/1
