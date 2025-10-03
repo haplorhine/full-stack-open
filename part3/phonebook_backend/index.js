@@ -17,12 +17,15 @@ app.get('/', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(result => {
+    response.json(result)
+  })
+})
 
-    result.forEach(person => {
-      console.log(person)
-
-    })
-    mongoose.connection.close()
+app.get('/info', (request, response) => {
+  Person.find({}).then(result => {
+    const message = `Phonebook has info for ${result.length} people`
+    const dateOfRequest = Date()
+    response.send(`<p>${message}</p><p>${dateOfRequest}</p>`)
   })
 })
 
@@ -40,30 +43,31 @@ app.get('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
+  const errors = []
+
   if (!body.name) {
-    return response.status(400).json({
-      error: 'name missing'
-    })
+    errors.push('name missing')
   }
   if (!body.number) {
+    errors.push('number missing')
+  }
+
+  // if (persons.some(person => person.name === body.name)) {
+  //   errors.push('name must be unique')
+  // }
+
+  if (errors.length > 0) {
     return response.status(400).json({
-      error: 'number missing'
+      errors: errors
     })
   }
 
-  if (persons.some(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
+  const person = new Person({ ...body })
 
-  const id = String(Math.floor(Math.random() * (6000 - 1000) + 1000))
+  person.save().then(person => {
+    response.json(person)
 
-  const person = { id: id, ...body }
-
-  persons = persons.concat(person)
-
-  response.json(person)
+  })
 
 })
 
