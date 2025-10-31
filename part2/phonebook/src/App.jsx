@@ -5,80 +5,97 @@ import Filter from './components/Filter'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
 
-
 const App = () => {
   const [persons, setPersons] = useState([])
+
   const [newName, setNewName] = useState('')
+
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [message, setMessage] = useState(null)
 
   useEffect(() => {
-    console.log("effect")
-    personService
-      .getAll()
-      .then(initialPersons => {
-        console.log('promise fulfilled')
-        setPersons(initialPersons)
-      })
+    console.log('effect')
+    personService.getAll().then((initialPersons) => {
+      console.log('promise fulfilled')
+      setPersons(initialPersons)
+    })
   }, [])
-  console.log("persons length", persons.length)
+  console.log('persons length', persons.length)
 
-  const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
+  )
+
+  const createMessage = (type, text) => {
+    return { type: type, text: text }
+  }
 
   const removeMessage = (millis) => {
-    const id = setTimeout(() => {
+    setTimeout(() => {
       setMessage(null)
     }, millis)
   }
 
-  const addPerson = ev => {
+  const addPerson = (ev) => {
     ev.preventDefault()
     console.log(ev)
-    const existingPerson = persons.find(person => person.name === newName)
+    const existingPerson = persons.find((person) => person.name === newName)
     if (existingPerson === undefined) {
       personService
         .create({ name: newName, number: newNumber })
-        .then(returnedPerson => {
-          console.log("app returnedperson:", returnedPerson)
+        .then((returnedPerson) => {
+          console.log('app returnedperson:', returnedPerson)
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
-          setMessage(`Added ${returnedPerson.name}`)
+          setMessage(
+            createMessage('notification', `Added ${returnedPerson.name}`)
+          )
           removeMessage(5000)
         })
-    } else if (confirm(`${newName} is already added to the phonebook, replace old number with new one?`)) {
+    } else if (
+      confirm(
+        `${newName} is already added to the phonebook, replace old number with new one?`
+      )
+    ) {
       const changedPerson = { ...existingPerson, number: newNumber }
       personService
         .update(existingPerson.id, changedPerson)
         .then(() => {
-          personService
-            .getAll()
-            .then(returnedPersons => {
-              setPersons(returnedPersons)
-              setMessage(`Updated ${existingPerson.name}`)
-              removeMessage(5000)
-            })
+          personService.getAll().then((returnedPersons) => {
+            setPersons(returnedPersons)
+            setMessage(
+              createMessage('notification', `Updated ${existingPerson.name}`)
+            )
+            removeMessage(5000)
+          })
+        })
+        .catch(() => {
+          setMessage(
+            createMessage(
+              'error',
+              `the Person '${existingPerson.name}' was already deleted from the server`
+            )
+          )
+          removeMessage(5000)
+          setPersons(persons.filter((p) => p.id !== existingPerson.id))
         })
     }
   }
 
-  const deletePerson = personToDelete => {
-    console.log(`${personToDelete.name} needs to be deleted`) 
+  const deletePerson = (personToDelete) => {
+    console.log(`${personToDelete.name} needs to be deleted`)
     if (confirm(`Delete ${personToDelete.name}?`)) {
-      personService
-        .remove(personToDelete.id)
-        .then(response => {
-          setPersons(persons.filter(person => person.id !== personToDelete.id))
-        })
+      personService.remove(personToDelete.id).then(() => {
+        setPersons(persons.filter((person) => person.id !== personToDelete.id))
+      })
     }
   }
 
-  const nameChange = ev => setNewName(ev.target.value)
-  const numberChange = ev => setNewNumber(ev.target.value)
-  const filterChange = ev => setFilter(ev.target.value)
-
-
+  const nameChange = (ev) => setNewName(ev.target.value)
+  const numberChange = (ev) => setNewNumber(ev.target.value)
+  const filterChange = (ev) => setFilter(ev.target.value)
 
   return (
     <div>
@@ -90,7 +107,13 @@ const App = () => {
 
       <h3>add a new</h3>
 
-      <PersonForm onSubmit={addPerson} numberChange={numberChange} nameChange={nameChange} newName={newName} newNumber={newNumber} />
+      <PersonForm
+        onSubmit={addPerson}
+        numberChange={numberChange}
+        nameChange={nameChange}
+        newName={newName}
+        newNumber={newNumber}
+      />
 
       <h3>Numbers</h3>
 
