@@ -75,7 +75,7 @@ const App = () => {
           setMessage(
             createMessage(
               'error',
-              `the Person '${existingPerson.name}' was already deleted from the server`
+              `Information of '${existingPerson.name}' was already deleted from the server`
             )
           )
           removeMessage(5000)
