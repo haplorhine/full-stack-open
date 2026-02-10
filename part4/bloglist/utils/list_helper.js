@@ -10,9 +10,19 @@ const totalLikes = (blogs) => {
   return likes
 }
 
-const favoriteBlog = (blogs) => {}
+const favoriteBlog = (blogs) => {
+  if (blogs.length === 0) {
+    throw new Error('blogs is empty')
+  }
+  let favorite = blogs[0]
+  blogs.forEach((blog) => {
+    favorite = blog.likes > favorite.likes ? blog : favorite
+  })
+  return favorite
+}
 
 module.exports = {
   dummy,
   totalLikes,
+  favoriteBlog,
 }
