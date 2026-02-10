@@ -21,8 +21,6 @@ describe('total likes', () => {
     },
   ]
 
-  const likesOfOneBlog = listWithOneBlog[0].likes
-
   const listWithAllBlogs = [
     {
       _id: '5a422a851b54a676234d17f7',
@@ -74,19 +72,14 @@ describe('total likes', () => {
     },
   ]
 
-  const likesOfAllBlogs = listWithAllBlogs
-    .map((blog) => blog.likes)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-  console.log('likes', likesOfAllBlogs)
-
   test('when list has only one blog, equals the likes of that', () => {
     const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, likesOfOneBlog)
+    assert.strictEqual(result, 4)
   })
 
   test('returns sum of likes of all blogs', () => {
     const result = listHelper.totalLikes(listWithAllBlogs)
-    assert.strictEqual(result, likesOfAllBlogs)
+    assert.strictEqual(result, 36)
   })
 
   test('of empty list is zero', () => {
