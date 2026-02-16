@@ -10,7 +10,7 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  Blog.insertMany(helper.initialBlogs)
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('all blogs are returned in json format', async () => {
@@ -30,7 +30,7 @@ test('unique identifier property of the blog posts is named "id"', async () => {
   assert(blogs.every((blog) => Object.hasOwn(blog, 'id')))
 })
 
-test.only('a blog post can be added ', async () => {
+test('a blog post can be added ', async () => {
   const newBlog = {
     title: 'First class something',
     author: 'Bro C. Olive',
@@ -46,6 +46,21 @@ test.only('a blog post can be added ', async () => {
   const blogsInitial = helper.initialBlogs
   const blogsAfter = await helper.blogsInDb()
   assert.strictEqual(blogsAfter.length, blogsInitial.length + 1)
+})
+
+test.only('deletion of a blog post succeeds with status code 204 if id is valid', async () => {
+  const blogsBefore = await helper.blogsInDb()
+  const blogToDelete = blogsBefore[0]
+  console.log('toDelete', blogToDelete)
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+  const blogsAfterDelete = await helper.blogsInDb()
+
+  const ids = blogsAfterDelete.map((blog) => blog.id)
+
+  assert(!ids.includes(blogToDelete.id))
+
+  assert.strictEqual(blogsAfterDelete.length, helper.initialBlogs.length - 1)
 })
 
 after(async () => {
