@@ -12,6 +12,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -36,12 +37,12 @@ const App = () => {
       const user = await loginService.login({ username, password })
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -53,7 +54,7 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
       url,
@@ -61,16 +62,26 @@ const App = () => {
       author,
     }
 
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-    })
+    const returnedBlog = await blogService.create(blogObject)
+    setBlogs(blogs.concat(returnedBlog))
+
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+
+    setNotificationMessage(
+      `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+    )
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
   }
 
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={errorMessage} />
+        <Notification className="error" message={errorMessage} />
         <LoginForm
           username={username}
           password={password}
@@ -85,10 +96,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification className="notification" message={notificationMessage} />
       <LoggedInUser user={user} onLogout={handleLogout} />
 
       <h2>create new</h2>
-
       <form onSubmit={addBlog}>
         <label>
           title{' '}
