@@ -19,7 +19,9 @@ const App = () => {
   const toggleRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.toSorted((a, b) => b.likes - a.likes)))
   }, [])
 
   useEffect(() => {
@@ -59,7 +61,7 @@ const App = () => {
 
     const returnedBlog = await blogService.create(blogObject)
     console.log('returned blog', returnedBlog)
-    setBlogs(blogs.concat(returnedBlog))
+    setBlogs(blogs.concat(returnedBlog).toSorted((a, b) => b.likes - a.likes))
 
     setNotificationMessage(
       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
