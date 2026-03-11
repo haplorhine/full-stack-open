@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import LikeButton from './LikeButton'
 
 const Blog = ({ blog, onLike, onRemove }) => {
   const blogStyle = {
@@ -19,7 +20,7 @@ const Blog = ({ blog, onLike, onRemove }) => {
     <>
       <div class="blogUrl">{blog.url}</div>
       <div class="likes">
-        {blog.likes} <button onClick={onLike}>like</button>
+        {blog.likes} <LikeButton onLike={onLike} />
       </div>
       <div>{blog.user?.name}</div>
       <button onClick={onRemove}>remove</button>
