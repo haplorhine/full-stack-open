@@ -42,8 +42,11 @@ const anecdoteSlice = createSlice({
         anecdote.id !== id ? anecdote : votedForAnecdote,
       )
     },
+    setAnecdotes(state, action) {
+      return action.payload
+    },
   },
 })
 
-export const { createAnecdote, voteFor } = anecdoteSlice.actions
+export const { createAnecdote, voteFor, setAnecdotes } = anecdoteSlice.actions
 export default anecdoteSlice.reducer
