@@ -18,8 +18,8 @@ const Blog = ({ blog, onLike, onRemove }) => {
 
   const blogDetails = () => (
     <>
-      <div class="blogUrl">{blog.url}</div>
-      <div class="likes">
+      <div className="blogUrl">{blog.url}</div>
+      <div className="likes">
         {blog.likes} <LikeButton onLike={onLike} />
       </div>
       <div>{blog.user?.name}</div>
