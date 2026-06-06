@@ -71,10 +71,9 @@ const App = () => {
   }
 
   const addBlog = async (blogObject) => {
-    toggleRef.current.toggleVisibility()
-
     const returnedBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(returnedBlog).toSorted((a, b) => b.likes - a.likes))
+    navigate('/')
 
     setNotificationMessage(
       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
@@ -116,12 +115,21 @@ const App = () => {
             login
           </Link>
         )}
+        {user && (
+          <Link style={padding} to="/create">
+            new blog
+          </Link>
+        )}
         {user && <button onClick={handleLogout}>logout</button>}
       </nav>
 
-      {/* <LoggedInUser user={user} onLogout={handleLogout} /> */}
-
       <Routes>
+        <Route
+          path="/"
+          element={
+            <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+          }
+        />
         <Route
           path="/blogs/:id"
           element={
@@ -155,9 +163,13 @@ const App = () => {
         />
 
         <Route
-          path="/"
+          path="/create"
           element={
-            <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+            !user ? (
+              <Navigate replace to="/" />
+            ) : (
+              <BlogForm createBlog={addBlog} />
+            )
           }
         />
       </Routes>
