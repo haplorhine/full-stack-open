@@ -54,13 +54,19 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   response.status(204).end()
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body
 
   const blog = await Blog.findById(request.params.id)
 
   if (!blog) {
     return response.status(404).end()
+  }
+
+  const user = request.user
+  console.log('user', user)
+  if (!user) {
+    return response.status(401).json({ error: 'not authenticated' })
   }
 
   blog.title = title
