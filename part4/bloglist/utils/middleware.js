@@ -48,7 +48,6 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = async (request, response, next) => {
   if (!request.token) {
-    console.log('helloooo')
     return response.status(401).json({ error: 'token missing' })
   }
 

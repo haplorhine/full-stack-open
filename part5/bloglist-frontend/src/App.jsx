@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  Navigate,
+  useMatch,
+} from 'react-router-dom'
+import BlogList from './components/BlogList'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
@@ -7,7 +15,7 @@ import Notification from './components/Notification'
 import LoggedInUser from './components/LoggedInUser'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom'
+import BlogDetails from './components/BlogDetails'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -17,9 +25,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
 
-  const toggleRef = useRef()
-
   const navigate = useNavigate()
+
+  const match = useMatch('/blogs/:id')
+  const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null
 
   useEffect(() => {
     blogService
@@ -57,6 +66,7 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    blogService.setToken(null)
     navigate('/')
   }
 
@@ -75,17 +85,22 @@ const App = () => {
   }
 
   const addLikeTo = async (blog) => {
+    if (!user) {
+      console.log('login to like')
+      return
+    }
     const changedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
     const returnedBlog = await blogService.update(changedBlog)
     setBlogs(blogs.map((b) => (b.id !== blog.id ? b : returnedBlog)))
   }
 
-  const removeBlog = async (blog) => {
+  const onRemove = async (blog) => {
     if (!confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       return
     }
     await blogService.remove(blog.id)
     setBlogs(blogs.filter((b) => b.id !== blog.id))
+    navigate('/')
   }
 
   const padding = { padding: '5px' }
@@ -107,6 +122,17 @@ const App = () => {
       {/* <LoggedInUser user={user} onLogout={handleLogout} /> */}
 
       <Routes>
+        <Route
+          path="/blogs/:id"
+          element={
+            <BlogDetails
+              blog={blog}
+              onLike={() => addLikeTo(blog)}
+              onRemove={() => onRemove(blog)}
+              canLike={!!user}
+            />
+          }
+        />
         <Route
           path="/login"
           element={
@@ -131,26 +157,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            <>
-              <h2>blogs</h2>
-              <Notification
-                className="notification"
-                message={notificationMessage}
-              />
-
-              {/* <h2>create new</h2>
-              <Togglable buttonLabel="create new blog" ref={toggleRef}>
-                <BlogForm createBlog={addBlog} />
-              </Togglable> */}
-              {blogs.map((blog) => (
-                <Blog
-                  onLike={() => addLikeTo(blog)}
-                  onRemove={() => removeBlog(blog)}
-                  key={blog.id}
-                  blog={blog}
-                />
-              ))}
-            </>
+            <BlogList blogs={blogs} notificationMessage={notificationMessage} />
           }
         />
       </Routes>
