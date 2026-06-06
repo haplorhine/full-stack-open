@@ -1,3 +1,5 @@
+import { Button, TextField } from '@mui/material'
+
 const LoginForm = ({
   username,
   password,
@@ -6,24 +8,29 @@ const LoginForm = ({
   setPassword,
 }) => (
   <form onSubmit={onLogin}>
-    <label>
-      username{' '}
-      <input
-        value={username}
-        onChange={({ target }) => setUsername(target.value)}
-      />
-    </label>
+    <TextField
+      id="standard-basic"
+      label="username"
+      variant="standard"
+      value={username}
+      onChange={({ target }) => setUsername(target.value)}
+    />
     <br />
-    <label>
-      password{' '}
-      <input
-        type="password"
-        value={password}
-        onChange={({ target }) => setPassword(target.value)}
-      />
-    </label>
+
+    <TextField
+      id="standard-basic"
+      label="password"
+      variant="standard"
+      type="password"
+      value={password}
+      onChange={({ target }) => setPassword(target.value)}
+      margin="dense"
+    />
+
     <div>
-      <button type="submit">login</button>
+      <Button type="submit" variant="contained">
+        login
+      </Button>
     </div>
   </form>
 )

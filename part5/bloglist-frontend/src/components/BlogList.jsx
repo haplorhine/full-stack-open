@@ -6,7 +6,7 @@ const BlogList = ({ blogs, notificationMessage }) => {
   return (
     <>
       <h2>blogs</h2>
-      <Notification className="notification" message={notificationMessage} />
+      <Notification className="success" message={notificationMessage} />
 
       {/* <h2>create new</h2>
               <Togglable buttonLabel="create new blog" ref={toggleRef}>
